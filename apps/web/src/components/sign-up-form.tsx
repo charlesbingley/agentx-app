@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
@@ -7,9 +9,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 
-import { authClient } from "@/lib/auth-client";
-
-import Loader from "./loader";
+import { supabase } from "@/lib/supabase/client";
 
 type SignUpFormProps = {
   onSwitchToSignIn?: () => void;
@@ -17,7 +17,6 @@ type SignUpFormProps = {
 
 export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
 
   const form = useForm({
     defaultValues: {
@@ -26,22 +25,24 @@ export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
       name: "",
     },
     onSubmit: async ({ value }) => {
-      await authClient.signUp.email(
-        {
-          email: value.email,
-          password: value.password,
-          name: value.name,
-        },
-        {
-          onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign up successful");
+      const { error } = await supabase.auth.signUp({
+        email: value.email,
+        password: value.password,
+        options: {
+          data: {
+            name: value.name,
           },
-          onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
-          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
-      );
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Sign up successful");
+      router.push("/dashboard");
     },
     validators: {
       onSubmit: z.object({
@@ -51,10 +52,6 @@ export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
       }),
     },
   });
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">

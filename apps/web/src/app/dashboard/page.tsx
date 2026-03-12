@@ -1,25 +1,23 @@
-import { auth } from "@agentx-app/auth";
-import { headers } from "next/headers";
+
 import { redirect } from "next/navigation";
 
-import { authClient } from "@/lib/auth-client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import Dashboard from "./dashboard";
 
 export default async function DashboardPage() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.auth.getSession();
 
-  if (!session?.user) {
+  if (!data.session?.user) {
     redirect("/auth/login");
   }
 
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>Welcome {session.user.name}</p>
-      <Dashboard session={session} />
+      <p>Welcome {data.session.user.email}</p>
+      <Dashboard session={data.session} />
     </div>
   );
 }

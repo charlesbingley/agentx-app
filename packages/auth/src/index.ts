@@ -1,19 +1,26 @@
-import prisma from "@agentx-app/db";
-import { env } from "@agentx-app/env/server";
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { nextCookies } from "better-auth/next-js";
+import { createServerClient } from "@supabase/ssr";
+import type { NextRequest } from "next/server";
 
-export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "postgresql",
-  }),
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
 
-  trustedOrigins: [env.CORS_ORIGIN],
-  emailAndPassword: {
-    enabled: true,
-  },
-  secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.BETTER_AUTH_URL,
-  plugins: [nextCookies()],
-});
+export const createSupabaseServerClient = (req: NextRequest) => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Missing Supabase environment variables");
+  }
+
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll: () => req.cookies.getAll(),
+      setAll: () => {
+        // No-op: route handlers can’t set cookies here.
+      },
+    },
+  });
+};
+
+export const getSession = async (req: NextRequest) => {
+  const supabase = createSupabaseServerClient(req);
+  const { data } = await supabase.auth.getSession();
+  return data.session;
+};

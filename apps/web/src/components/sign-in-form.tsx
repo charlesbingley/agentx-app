@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
@@ -7,9 +9,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 
-import { authClient } from "@/lib/auth-client";
-
-import Loader from "./loader";
+import { supabase } from "@/lib/supabase/client";
 
 type SignInFormProps = {
   onSwitchToSignUp?: () => void;
@@ -17,7 +17,6 @@ type SignInFormProps = {
 
 export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
 
   const form = useForm({
     defaultValues: {
@@ -25,21 +24,18 @@ export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
       password: "",
     },
     onSubmit: async ({ value }) => {
-      await authClient.signIn.email(
-        {
-          email: value.email,
-          password: value.password,
-        },
-        {
-          onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign in successful");
-          },
-          onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
-          },
-        },
-      );
+      const { error } = await supabase.auth.signInWithPassword({
+        email: value.email,
+        password: value.password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Sign in successful");
+      router.push("/dashboard");
     },
     validators: {
       onSubmit: z.object({
@@ -48,10 +44,6 @@ export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
       }),
     },
   });
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
@@ -122,7 +114,23 @@ export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
+      <div className="mt-4 flex flex-col gap-3 text-center">
+        <Button
+          variant="outline"
+          onClick={async () => {
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: "github",
+              options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+              },
+            });
+            if (error) {
+              toast.error(error.message);
+            }
+          }}
+        >
+          Continue with GitHub
+        </Button>
         {onSwitchToSignUp ? (
           <Button
             variant="link"

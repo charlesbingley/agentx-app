@@ -11,7 +11,7 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **tRPC** - End-to-end type-safe APIs
 - **Prisma** - TypeScript-first ORM
 - **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
+- **Authentication** - Supabase Auth (email + GitHub OAuth)
 - **Turborepo** - Optimized monorepo build system
 - **Husky** - Git hooks for code quality
 - **Starlight** - Documentation site with Astro
@@ -30,6 +30,16 @@ First, install the dependencies:
 ```bash
 pnpm install
 ```
+
+## Phase 0 Setup (Blueprint)
+
+1. Create env file: copy `.env.local.example` to `.env.local`
+2. Start infra: `docker compose up -d`
+3. Start dev server: `pnpm run dev`
+4. UI library docs: `pnpm run storybook`
+
+Supabase Auth requires enabling Email and GitHub OAuth in your Supabase project
+and setting `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ## Database Setup
 
@@ -50,7 +60,7 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+Open [http://localhost:9000](http://localhost:9000) in your browser to see the fullstack application.
 
 ## UI Customization
 
