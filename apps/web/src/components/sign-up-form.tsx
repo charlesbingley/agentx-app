@@ -1,18 +1,22 @@
+"use client";
+
 import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 
-import { authClient } from "@/lib/auth-client";
+import { supabase } from "@/lib/supabase/client";
 
-import Loader from "./loader";
+type SignUpFormProps = {
+  onSwitchToSignIn?: () => void;
+};
 
-export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
+export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
 
   const form = useForm({
     defaultValues: {
@@ -21,35 +25,33 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       name: "",
     },
     onSubmit: async ({ value }) => {
-      await authClient.signUp.email(
-        {
-          email: value.email,
-          password: value.password,
-          name: value.name,
-        },
-        {
-          onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign up successful");
+      const { error } = await supabase.auth.signUp({
+        email: value.email,
+        password: value.password,
+        options: {
+          data: {
+            name: value.name,
           },
-          onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
-          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
-      );
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Sign up successful");
+      router.push("/dashboard");
     },
     validators: {
       onSubmit: z.object({
         name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.email("Invalid email address"),
+        email: z.string().email("Invalid email address"),
         password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
   });
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
@@ -143,13 +145,19 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       </form>
 
       <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Already have an account? Sign In
-        </Button>
+        {onSwitchToSignIn ? (
+          <Button
+            variant="link"
+            onClick={onSwitchToSignIn}
+            className="text-indigo-600 hover:text-indigo-800"
+          >
+            Already have an account? Sign In
+          </Button>
+        ) : (
+          <Link className="text-sm font-medium text-indigo-600 hover:text-indigo-800" href="/auth/login">
+            Already have an account? Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

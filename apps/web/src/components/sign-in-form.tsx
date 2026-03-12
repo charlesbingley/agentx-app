@@ -1,18 +1,22 @@
+"use client";
+
 import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
 
-import { authClient } from "@/lib/auth-client";
+import { supabase } from "@/lib/supabase/client";
 
-import Loader from "./loader";
+type SignInFormProps = {
+  onSwitchToSignUp?: () => void;
+};
 
-export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
+export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
   const router = useRouter();
-  const { isPending } = authClient.useSession();
 
   const form = useForm({
     defaultValues: {
@@ -20,33 +24,26 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
       password: "",
     },
     onSubmit: async ({ value }) => {
-      await authClient.signIn.email(
-        {
-          email: value.email,
-          password: value.password,
-        },
-        {
-          onSuccess: () => {
-            router.push("/dashboard");
-            toast.success("Sign in successful");
-          },
-          onError: (error) => {
-            toast.error(error.error.message || error.error.statusText);
-          },
-        },
-      );
+      const { error } = await supabase.auth.signInWithPassword({
+        email: value.email,
+        password: value.password,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Sign in successful");
+      router.push("/dashboard");
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Invalid email address"),
+        email: z.string().email("Invalid email address"),
         password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
   });
-
-  if (isPending) {
-    return <Loader />;
-  }
 
   return (
     <div className="mx-auto w-full mt-10 max-w-md p-6">
@@ -117,14 +114,36 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
         </form.Subscribe>
       </form>
 
-      <div className="mt-4 text-center">
+      <div className="mt-4 flex flex-col gap-3 text-center">
         <Button
-          variant="link"
-          onClick={onSwitchToSignUp}
-          className="text-indigo-600 hover:text-indigo-800"
+          variant="outline"
+          onClick={async () => {
+            const { error } = await supabase.auth.signInWithOAuth({
+              provider: "github",
+              options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+              },
+            });
+            if (error) {
+              toast.error(error.message);
+            }
+          }}
         >
-          Need an account? Sign Up
+          Continue with GitHub
         </Button>
+        {onSwitchToSignUp ? (
+          <Button
+            variant="link"
+            onClick={onSwitchToSignUp}
+            className="text-indigo-600 hover:text-indigo-800"
+          >
+            Need an account? Sign Up
+          </Button>
+        ) : (
+          <Link className="text-sm font-medium text-indigo-600 hover:text-indigo-800" href="/auth/signup">
+            Need an account? Sign Up
+          </Link>
+        )}
       </div>
     </div>
   );

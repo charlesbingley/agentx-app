@@ -11,10 +11,17 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **tRPC** - End-to-end type-safe APIs
 - **Prisma** - TypeScript-first ORM
 - **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
+- **Authentication** - Supabase Auth (email + GitHub OAuth)
 - **Turborepo** - Optimized monorepo build system
 - **Husky** - Git hooks for code quality
 - **Starlight** - Documentation site with Astro
+
+## Blueprint Alignment
+
+- Marketplace routes and creator flows align with `products/BLUEPRINT.md`
+- tRPC routers structured by domain (auth, agents, reviews, subscriptions, creator, analytics, exchange, admin)
+- Frontend state modeled with Zustand stores (user, marketplace, execution)
+- Monorepo packages added for AI, exchange, and web3 scaffolding
 
 ## Getting Started
 
@@ -23,6 +30,16 @@ First, install the dependencies:
 ```bash
 pnpm install
 ```
+
+## Phase 0 Setup (Blueprint)
+
+1. Create env file: copy `.env.local.example` to `.env.local`
+2. Start infra: `docker compose up -d`
+3. Start dev server: `pnpm run dev`
+4. UI library docs: `pnpm run storybook`
+
+Supabase Auth requires enabling Email and GitHub OAuth in your Supabase project
+and setting `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
 ## Database Setup
 
@@ -43,7 +60,7 @@ Then, run the development server:
 pnpm run dev
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
+Open [http://localhost:9000](http://localhost:9000) in your browser to see the fullstack application.
 
 ## UI Customization
 
@@ -95,7 +112,25 @@ agentx-app/
 │   ├── api/         # API layer / business logic
 │   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
+│   ├── ai/          # AI execution scaffolding
+│   ├── exchange/    # Exchange price ingestion scaffolding
+│   └── web3/        # Web3 providers & contracts scaffolding
 ```
+
+## App Routes (Blueprint)
+
+- `/` Marketplace overview
+- `/agents` Agent list
+- `/agents/[id]` Agent detail + execution
+- `/dashboard` User dashboard
+- `/creator` Creator center
+- `/creator/new` Publish agent
+- `/creator/[id]/edit` Edit agent
+- `/portfolio` Trading portfolio
+- `/analytics` Usage analytics
+- `/settings` Account settings
+- `/auth/login` Login
+- `/auth/signup` Signup
 
 ## Available Scripts
 

@@ -11,7 +11,9 @@
     "./postcss.config": "./postcss.config.mjs"
   },
   "scripts": {
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "storybook": "storybook dev -p 9001",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
@@ -28,8 +30,14 @@
   },
   "devDependencies": {
     "@agentx-app/config": "workspace:*",
+    "@storybook/addon-essentials": "^8.6.8",
+    "@storybook/addon-interactions": "^8.6.8",
+    "@storybook/addon-links": "^8.6.8",
+    "@storybook/react-vite": "^8.6.8",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "autoprefixer": "catalog:",
+    "storybook": "^8.6.8",
     "tailwindcss": "catalog:",
     "typescript": "^5.9.3"
   }
