@@ -1,0 +1,19 @@
+{
+  "name": "@agentx-app/web3",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@agentx-app/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

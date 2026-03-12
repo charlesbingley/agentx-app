@@ -28,6 +28,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "sonner": "catalog:",
+    "zustand": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

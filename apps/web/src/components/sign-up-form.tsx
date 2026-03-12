@@ -2,6 +2,7 @@ import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
@@ -10,7 +11,11 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
+type SignUpFormProps = {
+  onSwitchToSignIn?: () => void;
+};
+
+export default function SignUpForm({ onSwitchToSignIn }: SignUpFormProps) {
   const router = useRouter();
   const { isPending } = authClient.useSession();
 
@@ -41,7 +46,7 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
     validators: {
       onSubmit: z.object({
         name: z.string().min(2, "Name must be at least 2 characters"),
-        email: z.email("Invalid email address"),
+        email: z.string().email("Invalid email address"),
         password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
@@ -143,13 +148,19 @@ export default function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () 
       </form>
 
       <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignIn}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Already have an account? Sign In
-        </Button>
+        {onSwitchToSignIn ? (
+          <Button
+            variant="link"
+            onClick={onSwitchToSignIn}
+            className="text-indigo-600 hover:text-indigo-800"
+          >
+            Already have an account? Sign In
+          </Button>
+        ) : (
+          <Link className="text-sm font-medium text-indigo-600 hover:text-indigo-800" href="/auth/login">
+            Already have an account? Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

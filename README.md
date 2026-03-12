@@ -16,6 +16,13 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Husky** - Git hooks for code quality
 - **Starlight** - Documentation site with Astro
 
+## Blueprint Alignment
+
+- Marketplace routes and creator flows align with `products/BLUEPRINT.md`
+- tRPC routers structured by domain (auth, agents, reviews, subscriptions, creator, analytics, exchange, admin)
+- Frontend state modeled with Zustand stores (user, marketplace, execution)
+- Monorepo packages added for AI, exchange, and web3 scaffolding
+
 ## Getting Started
 
 First, install the dependencies:
@@ -95,7 +102,25 @@ agentx-app/
 │   ├── api/         # API layer / business logic
 │   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
+│   ├── ai/          # AI execution scaffolding
+│   ├── exchange/    # Exchange price ingestion scaffolding
+│   └── web3/        # Web3 providers & contracts scaffolding
 ```
+
+## App Routes (Blueprint)
+
+- `/` Marketplace overview
+- `/agents` Agent list
+- `/agents/[id]` Agent detail + execution
+- `/dashboard` User dashboard
+- `/creator` Creator center
+- `/creator/new` Publish agent
+- `/creator/[id]/edit` Edit agent
+- `/portfolio` Trading portfolio
+- `/analytics` Usage analytics
+- `/settings` Account settings
+- `/auth/login` Login
+- `/auth/signup` Signup
 
 ## Available Scripts
 

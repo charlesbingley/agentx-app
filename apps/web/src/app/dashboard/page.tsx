@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   });
 
   if (!session?.user) {
-    redirect("/login");
+    redirect("/auth/login");
   }
 
   return (

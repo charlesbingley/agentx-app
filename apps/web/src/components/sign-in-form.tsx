@@ -2,6 +2,7 @@ import { Button } from "@agentx-app/ui/components/button";
 import { Input } from "@agentx-app/ui/components/input";
 import { Label } from "@agentx-app/ui/components/label";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import z from "zod";
@@ -10,7 +11,11 @@ import { authClient } from "@/lib/auth-client";
 
 import Loader from "./loader";
 
-export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
+type SignInFormProps = {
+  onSwitchToSignUp?: () => void;
+};
+
+export default function SignInForm({ onSwitchToSignUp }: SignInFormProps) {
   const router = useRouter();
   const { isPending } = authClient.useSession();
 
@@ -38,7 +43,7 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
     },
     validators: {
       onSubmit: z.object({
-        email: z.email("Invalid email address"),
+        email: z.string().email("Invalid email address"),
         password: z.string().min(8, "Password must be at least 8 characters"),
       }),
     },
@@ -118,13 +123,19 @@ export default function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () 
       </form>
 
       <div className="mt-4 text-center">
-        <Button
-          variant="link"
-          onClick={onSwitchToSignUp}
-          className="text-indigo-600 hover:text-indigo-800"
-        >
-          Need an account? Sign Up
-        </Button>
+        {onSwitchToSignUp ? (
+          <Button
+            variant="link"
+            onClick={onSwitchToSignUp}
+            className="text-indigo-600 hover:text-indigo-800"
+          >
+            Need an account? Sign Up
+          </Button>
+        ) : (
+          <Link className="text-sm font-medium text-indigo-600 hover:text-indigo-800" href="/auth/signup">
+            Need an account? Sign Up
+          </Link>
+        )}
       </div>
     </div>
   );

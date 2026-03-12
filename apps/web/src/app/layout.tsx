@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "agentx-app",
-  description: "agentx-app",
+  title: "AgentX",
+  description: "AgentX AI agent marketplace for Web3 trading.",
 };
 
 export default function RootLayout({

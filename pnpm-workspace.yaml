@@ -19,3 +19,4 @@ catalog:
   "@types/react-dom": ^19.2.3
   tailwindcss: ^4.1.18
   alchemy: ^0.87.0
+  zustand: ^5.0.5
