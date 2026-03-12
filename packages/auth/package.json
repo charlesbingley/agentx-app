@@ -1,0 +1,24 @@
+{
+  "name": "@agentx-app/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@agentx-app/db": "workspace:*",
+    "@agentx-app/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@agentx-app/config": "workspace:*",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "agentx-app",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:web": "turbo -F web dev",
+    "db:push": "turbo -F @agentx-app/db db:push",
+    "db:studio": "turbo -F @agentx-app/db db:studio",
+    "db:generate": "turbo -F @agentx-app/db db:generate",
+    "db:migrate": "turbo -F @agentx-app/db db:migrate",
+    "db:start": "turbo -F @agentx-app/db db:start",
+    "db:watch": "turbo -F @agentx-app/db db:watch",
+    "db:stop": "turbo -F @agentx-app/db db:stop",
+    "db:down": "turbo -F @agentx-app/db db:down",
+    "deploy": "turbo -F @agentx-app/infra deploy",
+    "destroy": "turbo -F @agentx-app/infra destroy",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@agentx-app/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@agentx-app/config": "workspace:*",
+    "@cloudflare/workers-types": "catalog:",
+    "@types/node": "^22.13.14",
+    "husky": "^9.1.7",
+    "lefthook": "^2.0.13",
+    "lint-staged": "^16.1.2",
+    "turbo": "^2.8.12",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": ""
+  },
+  "packageManager": "pnpm@10.32.1"
+}
